@@ -1,0 +1,56 @@
+Note:
+1. 最简单的CS通讯，server端的socket直接用来传数据，直接通过指定socket获取stream,不需要connect和accept。
+2. 稍微复杂的CS通讯，server端的socket不是用来传数据的，而是用来监听client的connect请求。
+
+	如果不指定ip地址，则使用127.0.0.1作为自己的ip。并会在构造函数中绑定。接下来只需要调用accept()。
+    mSocketListen = new ServerSocket(4242);
+
+    public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOException {
+        setImpl();
+        if (port < 0 || port > 0xFFFF)
+            throw new IllegalArgumentException(
+                       "Port value out of range: " + port);
+        if (backlog < 1)
+          backlog = 50;
+        try {
+            bind(new InetSocketAddress(bindAddr, port), backlog);
+        } catch(SecurityException e) {
+            close();
+            throw e;
+        } catch(IOException e) {
+            close();
+            throw e;
+        }
+    }
+    
+    listen函数设计如下：
+    	public void listen() {
+		try {
+			mSocketListen = new ServerSocket(4242);  //this constructor will connect the IP/port
+			
+			while (true) {
+
+				mSocketConnected = mSocketListen.accept(); 
+				
+				Thread _Thread = new Thread(new RunReader());	
+				_Thread.start();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	} 
+3.BufferedReader的readline只有遇到“\n”符号才会触发，所以，发送端一定要在字符串末尾加这个，不然会readline()会一直阻塞。如下面的设计
+	public void writeMSG(String pString){
+		try {
+			mOutPut = mSockService.getOutputStream();
+			mPrintWriter = new PrintWriter(mSockService.getOutputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		mPrintWriter.write(pString+"\n");  //增加"\n"
+		mPrintWriter.flush();
+		
+	} 
