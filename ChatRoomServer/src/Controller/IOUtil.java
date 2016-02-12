@@ -1,6 +1,7 @@
 package Controller;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -11,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -19,105 +21,31 @@ import javax.swing.JFileChooser;
 
 public class IOUtil {
 	
-	public static void closeSocket(Socket pSocket){
-		
-		if(pSocket!=null){
-			try {
-				pSocket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			pSocket = null;
-		}
-	}
-	public static void closeServerSocket(ServerSocket pSocket){
-		
-		if(pSocket!=null){
-			try {
-				pSocket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			pSocket = null;
-		}
-	}
-	public static void closeInputStream(InputStream pInputStream){
-		
-		if(pInputStream!=null){
-			try {
-				pInputStream.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			pInputStream = null;
-		}
-	}
 
-	public static void closeOutputStream(OutputStream pOutputStream){
+	public static void closeIO(Closeable pClosable){
 		
-		if(pOutputStream!=null){
+		if(pClosable!=null){
 			try {
-				pOutputStream.close();
+				pClosable.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			pOutputStream = null;
+			pClosable = null;
 		}
 	}
-	
-	public static void closePrintWriter(PrintWriter pPrintWriter){
+	 
+	public static void closeNetInStream(Socket pSockServer,InputStream pInput,InputStreamReader pInputReader,BufferedReader pBufferReader) {
 		
-		if(pPrintWriter!=null){
-			pPrintWriter.close();
-			pPrintWriter = null;
-		}
-	}
-	
-	public static void closeInputStreamReader(InputStreamReader pInputStreamReader){
-		
-		if(pInputStreamReader!=null){
-			try {
-				pInputStreamReader.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			pInputStreamReader = null;
-		}
-	}
-	
-	public static void closeBufferReader(BufferedReader pBufferedReader){
-		
-		if(pBufferedReader!=null){
-			try {
-				pBufferedReader.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			pBufferedReader = null;
-		}
-	}
-	
-	public static void closeNetInStream(Socket pSockServer,InputStream pInput,InputStreamReader pInputReader,BufferedReader pInputBuffer) {
-		IOUtil.closeSocket(pSockServer);
-		IOUtil.closeInputStream(pInput);
-		IOUtil.closeInputStreamReader(pInputReader);
-		IOUtil.closeBufferReader(pInputBuffer);
+		closeIO(pSockServer);
+		closeIO(pInput);
+		closeIO(pInputReader);
+		closeIO(pBufferReader);  
 	}
 	public static void closeNetOutStream(OutputStream pOutPut,PrintWriter pPrintWriter) {
-		IOUtil.closeOutputStream(pOutPut); 
-		IOUtil.closePrintWriter(pPrintWriter);
+		closeIO(pOutPut);
+		closeIO(pPrintWriter); 
 	}
 	
 	public static <T> void writeObject(T _CheckBoxArrayState,
@@ -135,8 +63,8 @@ public class IOUtil {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} finally{
-			closeOutputStream(_ObjOut);
-			closeOutputStream(_OutputStream);
+			closeIO(_ObjOut);
+			closeIO(_OutputStream);
 	 
 		}
 	}
@@ -160,8 +88,8 @@ public class IOUtil {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} 
-		closeInputStream(pObjIn);
-		closeInputStream(pInputStream);
+		closeIO(pObjIn);
+		closeIO(pInputStream);
 		return pCheckBoxArrayState;
 	}
 

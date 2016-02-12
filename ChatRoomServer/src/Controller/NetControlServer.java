@@ -106,7 +106,7 @@ System.out.println("after read");
 		// TODO Auto-generated method stub
 		super.finalize();
 		
-		IOUtil.closeServerSocket(mSocketListen);
+		IOUtil.closeIO(mSocketListen);
 		IOUtil.closeNetInStream(mSocketConnected,mInput,mInputReader,mBufferedReader); 		
 		IOUtil.closeNetOutStream(mOutPut,mPrintWriter);
 	}
